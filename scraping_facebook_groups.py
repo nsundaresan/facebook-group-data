@@ -22,10 +22,12 @@ limit = 100
 first_url = "https://graph.facebook.com/v2.10/{}".format(group_id) + \
             "/feed/?fields=id&limit={}&access_token={}&since={}&until={}".format(limit, access_token, since_date, until_date)
 
-# function that will do bulk of the work -- adds all the posts and relevant information into a dictionary.
-
-
 def insert_id():
+    """
+    Obtains information about a page, and compiles it into a list of posts.
+    Parameters: None
+    Returns: final_list, a list of all the posts and relevant information. 
+    """        
     final_list = list()                      # Final list of all the posts
     count = 0                                # To update us on how many posts we have gone through so far
     data = (requests.get(first_url)).json()  # Data from first API call to get things started
@@ -57,9 +59,6 @@ def insert_id():
             go_next = False
 
     return final_list
-
-# function that retrieves first level information from each post returned by the API call.
-
 
 def insert_message_info(post):
     """
