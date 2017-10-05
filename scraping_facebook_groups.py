@@ -22,12 +22,12 @@ limit = 100
 first_url = "https://graph.facebook.com/v2.10/{}".format(group_id) + \
             "/feed/?fields=id&limit={}&access_token={}&since={}&until={}".format(limit, access_token, since_date, until_date)
 
-def insert_id():
+def insert_info():
     """
     Obtains information about a page, and compiles it into a list of posts.
     Parameters: None
-    Returns: final_list, a list of all the posts and relevant information. 
-    """        
+    Returns: final_list, a list of all the posts and relevant information.
+    """
     final_list = list()                      # Final list of all the posts
     count = 0                                # To update us on how many posts we have gone through so far
     data = (requests.get(first_url)).json()  # Data from first API call to get things started
@@ -60,6 +60,9 @@ def insert_id():
 
     return final_list
 
+def get_basic_info():
+    """Inserts basic information about the group such as group description, type, people in the group, etc."""
+
 def insert_message_info(post):
     """
     Takes a post id, obtains information about that post, and compiles it into an entry. Information about a post includes:
@@ -85,6 +88,7 @@ def insert_message_info(post):
         post["name"] = post_info["name"]
     if "from" in post_info:
         post["author"] = post_info["from"]["name"]
+        post["author_id"] = post_info["from"]["id"]
     if "comments" in post_info:
         comments = insert_comment_info(post_info)
         post["comments"] = comments
@@ -120,6 +124,7 @@ def insert_reactions_info(post_info):
         entry = dict()
         entry["name"] = reaction["name"]
         entry["type"] = reaction["type"]
+        entry["id"] = reaction["id"]
         reactions_list.append(entry)
     return reactions_list
 
@@ -137,6 +142,7 @@ def insert_comment_info(post_info):
         entry["message"] = comment["message"]
         entry["created_time"] = comment["created_time"]
         entry["author"] = comment["from"]["name"]
+        entry["author_id"] = comment["from"]["id"]
         entry["id"] = comment["id"]
         if "comments" in comment:
             sub_comments = insert_comment_info(comment)
@@ -156,7 +162,7 @@ def main():
     Parameters: None
     Returns: None
     """
-    result = insert_id()
+    result = insert_info()
 
     new_json = json.dumps(result)
     final_file = open("dict.json", "w")
