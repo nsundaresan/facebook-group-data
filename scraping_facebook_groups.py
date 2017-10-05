@@ -5,8 +5,8 @@ from multiprocessing import Manager, Pool
 import json
 
 # Access tokens in order to access all information needed
-app_id = "*****"
-app_secret = "*****"  # DO NOT SHARE WITH ANYONE!
+app_id = "467497920302675"
+app_secret = "a4d7463f4ccd637193fb63c2b8935bc1"  # DO NOT SHARE WITH ANYONE!
 group_id = "227341777331132"  # Just replace with any id of the group you want to scrape
 
 access_token = app_id + "|" + app_secret
@@ -22,6 +22,7 @@ limit = 100
 first_url = "https://graph.facebook.com/v2.10/{}".format(group_id) + \
             "/feed/?fields=id&limit={}&access_token={}&since={}&until={}".format(limit, access_token, since_date, until_date)
 
+# function that will do bulk of the work -- adds all the posts and relevant information into a dictionary.
 def insert_info():
     """
     Obtains information about a page, and compiles it into a list of posts.
@@ -60,9 +61,7 @@ def insert_info():
 
     return final_list
 
-def get_basic_info():
-    """Inserts basic information about the group such as group description, type, people in the group, etc."""
-
+# function that retrieves first level information from each post returned by the API call.
 def insert_message_info(post):
     """
     Takes a post id, obtains information about that post, and compiles it into an entry. Information about a post includes:
@@ -100,7 +99,6 @@ def insert_message_info(post):
         post["reactions"] = reactions
     return post
 
-
 def insert_likes_info(post_info):
     """
     Inserts information about likes to the post, a comment, or a reply. Adds just names of each person who gave a like.
@@ -109,7 +107,10 @@ def insert_likes_info(post_info):
     """
     likes_list = list()
     for like in post_info["likes"]["data"]:
-        likes_list.append(like["name"])
+        entry = dict()
+        entry["name"] = like["name"]
+        entry["id"] = like["id"]
+        likes_list.append(entry)
     return likes_list
 
 
