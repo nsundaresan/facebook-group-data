@@ -5,8 +5,8 @@ from multiprocessing import Manager, Pool
 import json
 
 # Access tokens in order to access all information needed
-app_id = "467497920302675"
-app_secret = "a4d7463f4ccd637193fb63c2b8935bc1"  # DO NOT SHARE WITH ANYONE!
+app_id = "*****"
+app_secret = "*****"  # DO NOT SHARE WITH ANYONE!
 group_id = "227341777331132"  # Just replace with any id of the group you want to scrape
 
 access_token = app_id + "|" + app_secret
