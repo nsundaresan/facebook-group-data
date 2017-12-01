@@ -11,7 +11,8 @@ app_secret = "*****"  # DO NOT SHARE WITH ANYONE!
 
 # Gets number of reactions for a post
 def addReactions(post):
-    reaction_dict = {"LIKE": 0, "HAHA": 0, "LOVE": 0, "WOW": 0, "SAD": 0, "ANGRY": 0}
+    reaction_dict = {"LIKE": 0, "HAHA": 0, "LOVE": 0, "WOW": 0, "SAD": 0, "ANGRY": 0, "PRIDE": 0,
+                    "THANKFUL": 0}
 
     if 'reactions' in post.keys():
         for reaction in post['reactions']:
@@ -35,7 +36,7 @@ def addCommentCount(post):
 # compiles the information.
 for id in group_ids:
     # Get basic information from the group page. Creates ScrapePage object
-    page_info = ScrapePage(id, app_id, app_secret, "2017-10-02", "2017-10-05")
+    page_info = ScrapePage(id, app_id, app_secret, "2017-11-01", "2017-11-27")
 
     # Different aspects of a page, including post information, general information and members.
     result = page_info.post_dict
@@ -55,15 +56,15 @@ for id in group_ids:
         writer = csv.writer(csv_file)
         # Column names
         writer.writerow(["id", "type", "author", "created_time", "LIKE",
-            "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "total_comments_and_replies",
-            "total_reaction_count" ])
+            "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "PRIDE", "THANKFUL",
+            "total_comments_and_replies", "total_reaction_count" ])
 
         for post in data:
             # Initial information
             row = [id, post['type'], post['author'], post['created_time']]
 
             # Add reaction information
-            reactions = ["LIKE", "HAHA", "LOVE", "WOW", "SAD", "ANGRY"]
+            reactions = ["LIKE", "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "PRIDE", "THANKFUL"]
             reaction_dict = addReactions(post)
             reaction_count = 0
 
@@ -77,7 +78,8 @@ for id in group_ids:
             # Total reaction count for post
             row.append(reaction_count)
 
-            writer.writerow(row)
+            # To ensure proper encoding
+            writer.writerow([val.encode('utf-8') if type(val) is not int else val for val in row])
 
 df = pd.read_csv("*****.csv")
 print(df)
