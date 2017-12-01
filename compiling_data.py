@@ -1,7 +1,7 @@
 # Nanda Sundaresan #
 
 from scraping_facebook_groups import ScrapePage
-import json, csv, requests
+import json, requests, csv
 import pandas as pd
 
 group_ids = ["*****"]  # Just replace with any id of the group you want to scrape
@@ -9,15 +9,8 @@ group_ids = ["*****"]  # Just replace with any id of the group you want to scrap
 app_id = "*****"
 app_secret = "*****"  # DO NOT SHARE WITH ANYONE!
 
-# Gets number of likes for a post
-def addLikes(post):
-    if 'likes' in post.keys():
-        return(len(post['likes']))
-    else:
-        return(0)
-
 # Gets number of reactions for a post
-def addReactions(post, reactions):
+def addReactions(post):
     reaction_dict = {"LIKE": 0, "HAHA": 0, "LOVE": 0, "WOW": 0, "SAD": 0, "ANGRY": 0}
 
     if 'reactions' in post.keys():
@@ -42,7 +35,7 @@ def addCommentCount(post):
 # compiles the information.
 for id in group_ids:
     # Get basic information from the group page. Creates ScrapePage object
-    page_info = ScrapePage(id, app_id, app_secret, "2017-10-04", "2017-10-05")
+    page_info = ScrapePage(id, app_id, app_secret, "2017-10-02", "2017-10-05")
 
     # Different aspects of a page, including post information, general information and members.
     result = page_info.post_dict
@@ -61,21 +54,17 @@ for id in group_ids:
     with open('{}.csv'.format(id), 'w') as csv_file:
         writer = csv.writer(csv_file)
         # Column names
-        writer.writerow(["id", "type", "author", "created time", "likes count", "LIKE",
-            "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "number of comments and replies",
-            "number of likes and reactions" ])
+        writer.writerow(["id", "type", "author", "created_time", "LIKE",
+            "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "total_comments_and_replies",
+            "total_reaction_count" ])
 
         for post in data:
             # Initial information
             row = [id, post['type'], post['author'], post['created_time']]
 
-            # Add count for likes
-            likes_count = addLikes(post)
-            row.append(likes_count)
-
             # Add reaction information
             reactions = ["LIKE", "HAHA", "LOVE", "WOW", "SAD", "ANGRY"]
-            reaction_dict = addReactions(post, reactions)
+            reaction_dict = addReactions(post)
             reaction_count = 0
 
             for reaction_name in reactions:
@@ -85,8 +74,8 @@ for id in group_ids:
             # Total comment and reply count for post
             row.append(addCommentCount(post))
 
-            # Total likes and reaction count for post
-            row.append(likes_count + reaction_count)
+            # Total reaction count for post
+            row.append(reaction_count)
 
             writer.writerow(row)
 

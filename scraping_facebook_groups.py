@@ -119,7 +119,7 @@ class ScrapePage():
         Returns: post, a dictionary that includes all the information about a post.
         """
         new_url = "https://graph.facebook.com/v2.10/{}".format(post["id"]) + \
-                  "/?fields=likes,reactions,message,link,created_time,type," + \
+                  "/?fields=reactions,message,link,created_time,type," + \
                   "name,from,comments{}&limit=100".format("{message,from,likes,reactions,created_time,id,comments}") + \
                   "&access_token={}".format(self.access_token)
         post_info = (requests.get(new_url)).json()
@@ -139,27 +139,10 @@ class ScrapePage():
         if "comments" in post_info:
             comments = ScrapePage.insert_comment_info(self, post_info)
             post["comments"] = comments
-        if "likes" in post_info:
-            likes = ScrapePage.insert_likes_info(self, post_info)
-            post["likes"] = likes
         if "reactions" in post_info:
             reactions = ScrapePage.insert_reactions_info(self, post_info)
             post["reactions"] = reactions
         return post
-
-    def insert_likes_info(self, post_info):
-        """
-        Inserts information about likes to the post, a comment, or a reply. Adds just names of each person who gave a like.
-        Parameters: post_info, a post from the page OR a comment of a post.
-        Returns: likes_list, a list of all the likes with their information (explained above).
-        """
-        likes_list = list()
-        for like in post_info["likes"]["data"]:
-            entry = dict()
-            entry["name"] = like["name"]
-            entry["id"] = like["id"]
-            likes_list.append(entry)
-        return likes_list
 
     def insert_reactions_info(self, post_info):
         """
@@ -195,9 +178,6 @@ class ScrapePage():
                 sub_comments = ScrapePage.insert_comment_info(self, comment)
                 entry["replies"] = sub_comments
             comment_list.append(entry)
-            if "likes" in comment:
-                sub_likes = ScrapePage.insert_likes_info(self, comment)
-                entry["likes"] = sub_likes
             if "reactions" in comment:
                 sub_reactions = ScrapePage.insert_reactions_info(self, comment)
                 entry["reactions"] = sub_reactions
