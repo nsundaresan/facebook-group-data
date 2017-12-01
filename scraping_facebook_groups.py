@@ -33,9 +33,7 @@ class ScrapePage():
         "/?fields=id,name,description,owner,privacy,updated_time,admins" + \
         "&access_token={}".format(self.access_token)
 
-        data = (requests.get(url)).json()
-
-        info_dict = dict()
+        data = json.dumps((requests.get(url)).json())
 
         return(data)
 

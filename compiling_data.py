@@ -58,7 +58,7 @@ for id in group_ids:
     data = json.load(open("{}.json".format(id)))
 
     # Take page's json data and convert to csv for easy transfer to pandas dataframe.
-    with open('{}.csv'.format(id), 'a') as csv_file:
+    with open('{}.csv'.format(id), 'w') as csv_file:
         writer = csv.writer(csv_file)
         # Column names
         writer.writerow(["id", "type", "author", "created time", "likes count", "LIKE",
