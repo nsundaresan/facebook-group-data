@@ -1,10 +1,8 @@
 # Nanda Sundaresan #
 
 from scraping_facebook_groups import ScrapePage
-import json
-import requests
+import json, csv, requests
 import pandas as pd
-import csv
 
 group_ids = ["*****"]  # Just replace with any id of the group you want to scrape
 

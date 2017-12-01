@@ -1,8 +1,7 @@
 # Nanda Sundaresan #
 
-import requests
+import requests, json
 from multiprocessing import Manager, Pool
-import json
 
 def unwrap_self_insert_message_info(arg, **kwarg):
     return ScrapePage.insert_message_info(*arg, **kwarg)
