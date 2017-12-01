@@ -36,7 +36,7 @@ def addCommentCount(post):
 # compiles the information.
 for id in group_ids:
     # Get basic information from the group page. Creates ScrapePage object
-    page_info = ScrapePage(id, app_id, app_secret, "2017-11-01", "2017-11-27")
+    page_info = ScrapePage(id, app_id, app_secret)
 
     # Different aspects of a page, including post information, general information and members.
     result = page_info.post_dict
