@@ -58,10 +58,10 @@ class ScrapePage():
                     count += len(data["data"])
                     next_url = str(data["paging"]["next"])
                     data = (requests.get(next_url)).json()
-                    print str(count) + " members added to list!"
+                    print(str(count) + " members added to list!")
             else:
                 count += len(data["data"])
-                print str(count) + " members added to list!"
+                print(str(count) + " members added to list!")
                 go_next = False
 
         return(final_list)
@@ -103,12 +103,12 @@ class ScrapePage():
                 count += len(data["data"])
                 next_url = str(data["paging"]["next"])
                 data = (requests.get(next_url)).json()
-                print str(count) + " statuses added to list!"
+                print(str(count) + " statuses added to list!")
 
             else:
                 go_next = False
 
-        return final_list
+        return(final_list)
 
     def insert_message_info(self, post):
         """
@@ -142,7 +142,7 @@ class ScrapePage():
         if "reactions" in post_info:
             reactions = ScrapePage.insert_reactions_info(self, post_info)
             post["reactions"] = reactions
-        return post
+        return(post)
 
     def insert_reactions_info(self, post_info):
         """
@@ -157,7 +157,7 @@ class ScrapePage():
             entry["type"] = reaction["type"]
             entry["id"] = reaction["id"]
             reactions_list.append(entry)
-        return reactions_list
+        return(reactions_list)
 
     def insert_comment_info(self, post_info):
         """
@@ -181,7 +181,7 @@ class ScrapePage():
             if "reactions" in comment:
                 sub_reactions = ScrapePage.insert_reactions_info(self, comment)
                 entry["reactions"] = sub_reactions
-        return comment_list
+        return(comment_list)
 
     def __str__(self):
         return("{}".format(self.final_dict))
