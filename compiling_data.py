@@ -24,19 +24,69 @@ def addReactions(post):
 def addCommentCount(post):
     if 'comments' in post.keys():
         comment_count = len(post['comments'])
-        for comment in post['comments']:
-            if 'replies' in comment:
-                comment_count += len(comment['replies'])
         return(comment_count)
     else:
         return(0)
 
+def addRepliesCount(post):
+    if 'comments' in post.keys():
+        replies_count = 0
+        for comment in post['comments']:
+            if 'replies' in comment:
+                replies_count += len(comment['replies'])
+        return(replies_count)
+    else:
+        return(0)
+
+def checkAuthorContrib(post):
+    if 'comments' in post.keys():
+        author_contrib = False
+        author = post['author']
+
+        for comment in post['comments']:
+            if comment['author'] == author:
+                author_contrib = True
+            elif 'replies' in comment:
+                for reply in comment['replies']:
+                    if reply['author'] == author:
+                        author_contrib = True
+
+        return(author_contrib)
+
+    else:
+        return(False)
+
+def checkAuthorReaction(post):
+    if 'reactions' in post.keys():
+        author_contrib = False
+        author = post['author']
+
+        for reaction in post['reactions']:
+            if reaction['name'] == author:
+                author_contrib = True
+            elif 'comments' in post.keys():
+                for comment in post['comments']:
+                    if 'reactions' in comment:
+                        for com_reaction in comment['reactions']:
+                            if com_reaction['name'] == author:
+                                author_contrib = True
+                    if 'replies' in comment and author_contrib == False:
+                        for reply in comment['replies']:
+                            if 'reactions' in reply:
+                                for rep_reaction in reply['reactions']:
+                                    if rep_reaction['name'] == author:
+                                        author_contrib = True
+
+        return(author_contrib)
+
+    else:
+        return(False)
 
 # From all the group ids, scrape group data, then make a json and csv file that
 # compiles the information.
 for id in group_ids:
     # Get basic information from the group page. Creates ScrapePage object
-    page_info = ScrapePage(id, app_id, app_secret)
+    page_info = ScrapePage(id, app_id, app_secret) #,since_date = "2017-10-04",until_date = "2017-10-05"
 
     # Different aspects of a page, including post information, general information and members.
     result = page_info.post_dict
@@ -57,7 +107,8 @@ for id in group_ids:
         # Column names
         writer.writerow(["id", "type", "author", "created_time", "LIKE",
             "HAHA", "LOVE", "WOW", "SAD", "ANGRY", "PRIDE", "THANKFUL",
-            "total_comments_and_replies", "total_reaction_count" ])
+            "total_comments", "total_replies", "total_comments_and_replies",
+            "total_reaction_count", "comments", "author_comment_contrib", "author_reaction_contrib"])
 
         for post in data:
             # Initial information
@@ -73,13 +124,29 @@ for id in group_ids:
                 reaction_count += reaction_dict[reaction_name]
 
             # Total comment and reply count for post
-            row.append(addCommentCount(post))
+            comment_count = addCommentCount(post)
+            replies_count = addRepliesCount(post)
+            comment_reply_count = comment_count + replies_count
+            row.extend([comment_count, replies_count, comment_reply_count])
 
             # Total reaction count for post
             row.append(reaction_count)
 
-            # To ensure proper encoding
-            writer.writerow([val.encode('utf-8') if type(val) is not int else val for val in row])
+            row = [val.encode('utf-8') if type(val) is not int else val for val in row]
 
-df = pd.read_csv("*****.csv")
+            # Add comment information
+            if 'comments' in post.keys():
+                comments = post['comments']
+                row.append(comments)
+            else:
+                row.append([])
+
+            # T/F if author replied or reacted to their post or any comments or replies to their post.
+            row.append(checkAuthorContrib(post))
+            row.append(checkAuthorReaction(post))
+
+            # To ensure proper encoding
+            writer.writerow(row)
+
+df = pd.read_csv("227341777331132.csv")
 print(df)
